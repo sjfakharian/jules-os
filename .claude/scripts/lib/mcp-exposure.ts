@@ -17,7 +17,7 @@
  * defect this module is shaped to prevent.
  */
 
-import { readdirSync, statSync, lstatSync, existsSync, realpathSync } from "node:fs";
+import { readdirSync, statSync, existsSync, realpathSync, type Dirent } from "node:fs";
 import { join, basename, resolve, sep } from "node:path";
 
 
@@ -309,13 +309,14 @@ export function visibleFiles(vaultRoot: string, policy: ExposurePolicy): Visible
 
 	const walk = (dir: string, scope: string, rootReal: string, depth: number): void => {
 		if (depth > MAX_DEPTH || !existsSync(dir)) return;
-		let entries: string[];
+		let entries: Dirent[];
 		try {
-			entries = readdirSync(dir);
+			entries = readdirSync(dir, { withFileTypes: true });
 		} catch {
 			return;
 		}
-		for (const f of entries) {
+		for (const entry of entries) {
+			const f = entry.name;
 			if (f.startsWith(".")) continue;
 			const full = join(dir, f);
 			let isDir: boolean;
@@ -323,7 +324,8 @@ export function visibleFiles(vaultRoot: string, policy: ExposurePolicy): Visible
 				// lstat describes the ENTRY; stat describes what it points at. The
 				// difference is the whole check: a link is contained before it is
 				// followed, and an ordinary entry costs no extra syscall.
-				const entry = lstatSync(full);
+				// By using withFileTypes: true, we avoid an lstatSync call for every single entry,
+				// which is a huge performance gain for large vaults.
 				if (entry.isSymbolicLink()) {
 					if (!containedIn(rootReal, full)) continue;
 					isDir = statSync(full).isDirectory();
