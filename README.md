@@ -1,4 +1,4 @@
-# Obsidian Change Review (formerly Obsidian-Jules)
+# Obsidian Change Review
 
 **Knowledge Change Control for Markdown Vaults.**
 
