@@ -9,7 +9,17 @@ import { basename, join, resolve } from "node:path";
 import { escapeRegex } from "./regex.ts";
 
 export function take(stdout: string, n: number): string {
-	return stdout.split("\n").slice(0, n).join("\n");
+	if (n <= 0) return "";
+	let index = -1;
+
+	// ⚡ Bolt: Performance optimization
+	// Avoid string.split('\n') which creates a huge array and causes O(N) memory allocation
+	// We only need the first n lines, so we find the nth newline character instead.
+	for (let i = 0; i < n; i++) {
+		index = stdout.indexOf('\n', index + 1);
+		if (index === -1) return stdout;
+	}
+	return stdout.slice(0, index);
 }
 
 /**
