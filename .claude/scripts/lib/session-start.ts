@@ -361,6 +361,8 @@ function findFrontmatterEnd(content: string): number {
 	return m && m.index !== undefined ? m.index + 3 : -1;
 }
 
+const _fmRegexCache = new Map<string, RegExp>();
+
 /**
  * Extract a string value for `field` from YAML frontmatter at the top of
  * a markdown document. Supports quoted ("..."), single-quoted ('...'),
@@ -379,10 +381,14 @@ export function extractFrontmatterField(
 	const end = findFrontmatterEnd(content);
 	if (end === -1) return null;
 	const fm = content.slice(3, end);
-	const re = new RegExp(
-		`^${escapeRegex(field)}:[ \\t]*(.*?)[ \\t]*\\r?$`,
-		"m",
-	);
+	let re = _fmRegexCache.get(field);
+	if (!re) {
+		re = new RegExp(
+			`^${escapeRegex(field)}:[ \\t]*(.*?)[ \\t]*\\r?$`,
+			"m",
+		);
+		_fmRegexCache.set(field, re);
+	}
 	const m = fm.match(re);
 	if (!m) return null;
 	const raw = m[1] ?? "";
