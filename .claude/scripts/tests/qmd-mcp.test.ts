@@ -83,10 +83,6 @@ describe("buildLaunchCommand", () => {
 	});
 
 	test("falls back to a single-string shell command when resolution returns null", () => {
-		// Single-string command with shell:true (not args+shell) so Node 24
-		// doesn't fire DEP0190. Args fold into the cmd string at build time
-		// so the spawn site can't accidentally reintroduce the deprecated
-		// args+shell pattern.
 		const { cmd, args, shell } = buildLaunchCommand(null, []);
 		assert.equal(cmd, "qmd mcp");
 		assert.deepEqual(args, []);

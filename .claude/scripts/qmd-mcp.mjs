@@ -215,12 +215,23 @@ export function resolveIndexSqlitePath(indexName, env, home) {
  * spawn site uses shell:true WITHOUT args, dodging Node 24's DEP0190
  * deprecation of the args+shell concatenation pattern.
  */
+function quoteForShell(arg) {
+	if (typeof arg !== "string") return arg;
+	// Node's child_process with shell: true on Windows delegates to cmd.exe.
+	// We do a best-effort quoting: wrap in double quotes and escape existing ones.
+	if (process.platform === "win32") {
+		return /[ &<>()|%^"]/.test(arg) ? `"${arg.replace(/"/g, '""')}"` : arg;
+	}
+	// POSIX sh delegates to /bin/sh. We wrap in single quotes and escape existing ones.
+	return /[^a-zA-Z0-9_\-./=:,]/.test(arg) ? `'${arg.replace(/'/g, "'\\''")}'` : arg;
+}
+
 export function buildLaunchCommand(entry, extraArgs = [], qmdIndex = null) {
 	const mcpArgs = qmdIndex ? ["--index", qmdIndex, "mcp"] : ["mcp"];
 	const qmdArgs = [...mcpArgs, ...extraArgs];
 	return entry
 		? { cmd: process.execPath, args: [entry, ...qmdArgs], shell: false }
-		: { cmd: ["qmd", ...qmdArgs].join(" "), args: [], shell: true };
+		: { cmd: ["qmd", ...qmdArgs.map(quoteForShell)].join(" "), args: [], shell: true };
 }
 
 function readManifestRaw() {

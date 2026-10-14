@@ -77,6 +77,16 @@ export function resolveQmdEntry(): string | null {
  * but we route through the safe form everywhere so a future caller can't
  * accidentally introduce a shell-injection vector.
  */
+export function quoteForShell(arg: string): string {
+	if (typeof arg !== "string") return arg;
+	if (process.platform === "win32") {
+		return /[ &<>()|%^"]/.test(arg) ? `"${arg.replace(/"/g, '""')}"` : arg;
+	}
+	return /[^a-zA-Z0-9_\-./=:,]/.test(arg)
+		? `'${arg.replace(/'/g, "'\\''")}'`
+		: arg;
+}
+
 export function buildQmdCommand(
 	entry: string | null,
 	subcommandArgs: readonly string[],
@@ -92,7 +102,7 @@ export function buildQmdCommand(
 				shell: false,
 			}
 		: {
-				cmd: ["qmd", ...subcommandArgs].join(" "),
+				cmd: ["qmd", ...subcommandArgs.map(quoteForShell)].join(" "),
 				args: [],
 				shell: true,
 			};

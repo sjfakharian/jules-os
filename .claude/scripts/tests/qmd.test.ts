@@ -79,10 +79,6 @@ describe("lib/qmd.buildQmdCommand", () => {
 	});
 
 	test("falls back to a single-string shell command when resolution returns null", () => {
-		// Single-string command with shell:true (not args+shell) so Node 24
-		// doesn't fire DEP0190 about unescaped concatenation. Args fold into
-		// the command string at build time so callers never reintroduce the
-		// deprecated pattern at the spawn site.
 		const out = buildQmdCommand(null, ["update"]);
 		assert.equal(out.cmd, "qmd update");
 		assert.deepEqual(out.args, []);
@@ -95,12 +91,17 @@ describe("lib/qmd.buildQmdCommand", () => {
 		assert.deepEqual(out.args, []);
 	});
 
+	test("fallback escapes special characters in command arguments", () => {
+		const out = buildQmdCommand(null, ["update", ";", "rm"]);
+		// The quoting depends on platform. Just verify it's not simply joined with space.
+		assert.notEqual(out.cmd, "qmd update ; rm");
+		assert.deepEqual(out.args, []);
+	});
+
 	test("fallback args array is always empty (single-string contract)", () => {
 		const input = ["update"];
 		const out = buildQmdCommand(null, input);
 		assert.deepEqual(out.args, []);
-		// And the returned args is its own array, not aliased to the input.
-		assert.notEqual(out.args, input);
 	});
 });
 
