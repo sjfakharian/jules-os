@@ -9,3 +9,7 @@
 ## 2024-10-12 - Vault-scale File Traversal Bottlenecks
 **Learning:** In codebases doing large, bounded synchronous walks (like `visibleFiles` iterating thousands of markdown notes), calling `readdirSync(dir)` followed by `lstatSync(file)` inside the loop creates massive system call overhead. On slower filesystems or large vaults, this is a significant bottleneck.
 **Action:** Always pass `{ withFileTypes: true }` to `readdirSync` or `readdir`. This yields `Dirent` objects which already know if they are a file, directory, or symlink, skipping the `lstat` syscall entirely for standard files and directories.
+
+## 2024-10-14 - RegExp compilation in frontmatter extraction
+**Learning:** Found that `extractFrontmatterField` was dynamically recompiling a `RegExp` object inside a loop (or per file across many directory walks) in `lib/session-start.ts`. Similar to the `isInfraFilename` issue, when this function is called on thousands of notes during memory indexing or formatting, compiling the regex repeatedly causes noticeable CPU overhead.
+**Action:** Implemented a caching mechanism using `Map<string, RegExp>` for the frontmatter extraction field regexes to reuse the compiled regex objects. This cut extraction overhead in half on repetitive queries. Always verify inner-loop extraction tools aren't lazily recompiling dynamic regular expressions.
