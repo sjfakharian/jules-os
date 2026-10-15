@@ -28,6 +28,20 @@ import { isAbsolute, join } from "node:path";
 const require = createRequire(import.meta.url);
 
 /**
+ * Escapes an argument for a cross-platform shell command.
+ * Windows shell rules differ significantly from POSIX shell rules.
+ */
+export function quoteForShell(arg: string): string {
+	if (/^[a-zA-Z0-9._\-=]+$/.test(arg)) return arg;
+	if (process.platform === "win32") {
+		// Escape double quotes and wrap in double quotes for Windows cmd.exe
+		return `"${arg.replace(/"/g, '""')}"`;
+	}
+	// Escape single quotes and wrap in single quotes for POSIX sh
+	return `'${arg.replace(/'/g, "'\\''")}'`;
+}
+
+/**
  * Locate @tobilu/qmd's real JS entrypoint. Returns an absolute path when
  * resolvable, null when not. A null return signals the caller to fall back
  * to invoking `qmd` directly via the platform shell (last-resort path for
@@ -92,7 +106,7 @@ export function buildQmdCommand(
 				shell: false,
 			}
 		: {
-				cmd: ["qmd", ...subcommandArgs].join(" "),
+				cmd: ["qmd", ...subcommandArgs.map(quoteForShell)].join(" "),
 				args: [],
 				shell: true,
 			};

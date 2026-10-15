@@ -36,6 +36,20 @@ import { homedir } from "node:os";
 const require = createRequire(import.meta.url);
 
 /**
+ * Escapes an argument for a cross-platform shell command.
+ * Windows shell rules differ significantly from POSIX shell rules.
+ */
+export function quoteForShell(arg) {
+	if (/^[a-zA-Z0-9._\-=]+$/.test(arg)) return arg;
+	if (process.platform === "win32") {
+		// Escape double quotes and wrap in double quotes for Windows cmd.exe
+		return `"${arg.replace(/"/g, '""')}"`;
+	}
+	// Escape single quotes and wrap in single quotes for POSIX sh
+	return `'${arg.replace(/'/g, "'\\''")}'`;
+}
+
+/**
  * Resolve the wrapper's vault root from a `file://` URL and optional env
  * override. Kept as a pure helper (both inputs passed in) so tests can lock
  * the path math without depending on the current process's working directory
@@ -220,7 +234,7 @@ export function buildLaunchCommand(entry, extraArgs = [], qmdIndex = null) {
 	const qmdArgs = [...mcpArgs, ...extraArgs];
 	return entry
 		? { cmd: process.execPath, args: [entry, ...qmdArgs], shell: false }
-		: { cmd: ["qmd", ...qmdArgs].join(" "), args: [], shell: true };
+		: { cmd: ["qmd", ...qmdArgs.map(quoteForShell)].join(" "), args: [], shell: true };
 }
 
 function readManifestRaw() {
