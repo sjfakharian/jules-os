@@ -95,6 +95,18 @@ describe("lib/qmd.buildQmdCommand", () => {
 		assert.deepEqual(out.args, []);
 	});
 
+	test("fallback shell command string properly escapes spaces and quotes in arguments", () => {
+		const argWithSpace = "vault a";
+		const argWithQuote = "vault's";
+		const out = buildQmdCommand(null, ["--index", argWithSpace, argWithQuote]);
+		if (process.platform === "win32") {
+			assert.equal(out.cmd, `qmd --index "vault a" "vault's"`);
+		} else {
+			assert.equal(out.cmd, `qmd --index 'vault a' 'vault'\\''s'`);
+		}
+		assert.deepEqual(out.args, []);
+	});
+
 	test("fallback args array is always empty (single-string contract)", () => {
 		const input = ["update"];
 		const out = buildQmdCommand(null, input);

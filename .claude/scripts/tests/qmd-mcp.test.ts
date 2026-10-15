@@ -93,6 +93,16 @@ describe("buildLaunchCommand", () => {
 		assert.equal(shell, true);
 	});
 
+	test("fallback escapes extra args containing spaces and quotes", () => {
+		const { cmd, args } = buildLaunchCommand(null, ["--name", "my vault's space"]);
+		if (process.platform === "win32") {
+			assert.equal(cmd, `qmd mcp --name "my vault's space"`);
+		} else {
+			assert.equal(cmd, `qmd mcp --name 'my vault'\\''s space'`);
+		}
+		assert.deepEqual(args, []);
+	});
+
 	test("fallback path folds extra argv into the cmd string", () => {
 		const { cmd, args } = buildLaunchCommand(null, ["--debug"]);
 		assert.equal(cmd, "qmd mcp --debug");
