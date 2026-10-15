@@ -55,7 +55,16 @@ export function stripCodeRegions(content: string): string {
 	const out: string[] = [];
 	let inFence = false;
 	let fenceMarker = "";
-	for (const line of content.split("\n")) {
+
+	// ⚡ Bolt: Performance optimization
+	// Avoid string.split('\n') which creates a huge intermediate array.
+	// Instead, iterate through the string and use indexOf('\n') to slice each line,
+	// drastically reducing memory allocations and GC pressure for large notes.
+	for (let start = 0, end = 0; start <= content.length; start = end + 1) {
+		end = content.indexOf('\n', start);
+		if (end === -1) end = content.length;
+		const line = content.slice(start, end);
+
 		const trimmed = line.trimStart();
 		if (inFence) {
 			if (trimmed.startsWith(fenceMarker)) inFence = false;
