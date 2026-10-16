@@ -1,0 +1,3 @@
+## 2024-05-20 - Palette UX in a CLI-Only environment
+**Learning:** In a completely CLI-driven, backend TypeScript environment like Jules-OS, standard web UI/UX tasks (e.g., adding ARIA labels or standardizing focus states) don't apply. "UX" here means Developer Experience (DX) and CLI output readability.
+**Action:** When asked for UX enhancements in this repo, focus on formatting CLI scripts. Use native ANSI escape codes for colors and add clear, semantic emojis (🧹, ✨, ❌, 📝) to make script outputs more glanceable and pleasant for the user, while strictly avoiding adding heavy dependencies like `chalk`. Keep changes lightweight.

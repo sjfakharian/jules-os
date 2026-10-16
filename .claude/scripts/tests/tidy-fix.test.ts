@@ -136,7 +136,7 @@ describe("tidy-fix", () => {
 	test("second apply run fixes nothing (idempotent); refusals persist", () => {
 		const { stdout, code } = run(["--apply"]);
 		assert.equal(code, 0);
-		assert.doesNotMatch(stdout, /^Fixed:$/m);
+		assert.doesNotMatch(stdout, /Fixed:/);
 		assert.doesNotMatch(stdout, /Done Solo/);
 		assert.doesNotMatch(stdout, /stray-note/);
 		// The judgment findings are still surfaced.

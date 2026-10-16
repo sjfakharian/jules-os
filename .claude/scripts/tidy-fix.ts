@@ -318,23 +318,33 @@ async function main(): Promise<void> {
 		);
 	}
 
+	const COLORS = {
+		RESET: "\x1b[0m",
+		BOLD: "\x1b[1m",
+		GREEN: "\x1b[32m",
+		YELLOW: "\x1b[33m",
+		BLUE: "\x1b[34m",
+		CYAN: "\x1b[36m",
+		DIM: "\x1b[2m",
+	};
+
 	const mode = apply ? "APPLIED" : "DRY-RUN (pass --apply to act)";
-	console.log(`tidy-fix — ${mode}`);
+	console.log(`${COLORS.BOLD}${COLORS.CYAN}🧹 tidy-fix — ${mode}${COLORS.RESET}`);
 	if (report.fixed.length === 0 && report.refused.length === 0) {
-		console.log("nothing to do — vault is clean.");
+		console.log(`${COLORS.DIM}nothing to do — vault is clean.${COLORS.RESET}`);
 		return;
 	}
 	if (report.fixed.length > 0) {
-		console.log(apply ? "\nFixed:" : "\nWould fix:");
+		console.log(apply ? `\n${COLORS.BOLD}${COLORS.GREEN}✨ Fixed:${COLORS.RESET}` : `\n${COLORS.BOLD}${COLORS.GREEN}✨ Would fix:${COLORS.RESET}`);
 		for (const f of report.fixed) console.log(`  ${f}`);
 	}
 	if (report.refused.length > 0) {
-		console.log("\nRefused (judgment — run /om-tidy):");
+		console.log(`\n${COLORS.BOLD}${COLORS.YELLOW}❌ Refused (judgment — run /om-tidy):${COLORS.RESET}`);
 		for (const r of report.refused) console.log(`  ${r}`);
 	}
 	if (report.notes.length > 0) {
-		console.log("\nNotes:");
-		for (const n of report.notes) console.log(`${n}`);
+		console.log(`\n${COLORS.BOLD}${COLORS.BLUE}📝 Notes:${COLORS.RESET}`);
+		for (const n of report.notes) console.log(`${COLORS.DIM}${n}${COLORS.RESET}`);
 	}
 }
 
