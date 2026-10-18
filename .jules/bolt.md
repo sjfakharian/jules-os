@@ -13,3 +13,6 @@
 ## 2024-10-14 - RegExp compilation in frontmatter extraction
 **Learning:** Found that `extractFrontmatterField` was dynamically recompiling a `RegExp` object inside a loop (or per file across many directory walks) in `lib/session-start.ts`. Similar to the `isInfraFilename` issue, when this function is called on thousands of notes during memory indexing or formatting, compiling the regex repeatedly causes noticeable CPU overhead.
 **Action:** Implemented a caching mechanism using `Map<string, RegExp>` for the frontmatter extraction field regexes to reuse the compiled regex objects. This cut extraction overhead in half on repetitive queries. Always verify inner-loop extraction tools aren't lazily recompiling dynamic regular expressions.
+## 2024-11-20 - O(N) Array Allocation in countSection
+**Learning:** `content.split("\n")` in `countSection` (and similarly in `countOpenLoops`) creates a huge intermediate array for large markdown files, even when the section being parsed is near the beginning. This O(N) allocation causes unnecessary garbage collection and memory overhead.
+**Action:** Use an iterative approach with `indexOf('\n')` and `slice` instead of `split` to process lines. This prevents massive array allocations and improves processing time significantly for large documents.
