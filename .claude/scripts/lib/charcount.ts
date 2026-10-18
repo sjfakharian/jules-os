@@ -17,7 +17,6 @@ export type CountArgs = {
 };
 
 export function countSection(content: string, args: CountArgs): number {
-	const lines = content.split("\n");
 	const sectionHeader = `### ${args.section}`;
 	const marker = args.sub ? `**${args.sub}:**` : null;
 
@@ -25,7 +24,14 @@ export function countSection(content: string, args: CountArgs): number {
 	let capturing = marker === null;
 	const captured: string[] = [];
 
-	for (const line of lines) {
+	// ⚡ Bolt: Performance optimization
+	// Avoid string.split('\n') to prevent massive array allocation for large notes.
+	// We iterate manually and slice.
+	for (let start = 0, end = 0; start <= content.length; start = end + 1) {
+		end = content.indexOf("\n", start);
+		if (end === -1) end = content.length;
+		const line = content.slice(start, end);
+
 		if (!inSection) {
 			if (line.includes(sectionHeader)) inSection = true;
 			continue;
