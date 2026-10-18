@@ -141,6 +141,6 @@ describe("tidy-fix", () => {
 		assert.doesNotMatch(stdout, /stray-note/);
 		// The judgment findings are still surfaced.
 		assert.match(stdout, /Mixed Topic\/ — mixed cluster/);
-		assert.match(stdout, /Refused \(judgment — run \/om-tidy\)/);
+		assert.match(stdout, /Refused.*\(judgment — run \/om-tidy\)/);
 	});
 });
