@@ -24,8 +24,16 @@ function parseArgs() {
         if (args[i] === '--replace' && args[i+1]) params.replace = args[++i];
     }
     
+    const c = {
+        reset: '\x1b[0m',
+        red: '\x1b[31m',
+        green: '\x1b[32m',
+        yellow: '\x1b[33m',
+        cyan: '\x1b[36m'
+    };
+
     if (!params.file || !params.search || params.replace === undefined) {
-        console.error("Usage: node apply-patch.ts --file <path> --search <string> --replace <string>");
+        console.error(`${c.cyan}💡 Usage:${c.reset} node apply-patch.ts --file <path> --search <string> --replace <string>`);
         process.exit(1);
     }
     return params;
@@ -49,8 +57,16 @@ function backupFile(filePath: string): string {
 function applyPatch() {
     const { file, search, replace } = parseArgs();
     
+    const c = {
+        reset: '\x1b[0m',
+        red: '\x1b[31m',
+        green: '\x1b[32m',
+        yellow: '\x1b[33m',
+        cyan: '\x1b[36m'
+    };
+
     if (!existsSync(file)) {
-        console.error(`[ERROR] File not found: ${file}`);
+        console.error(`${c.red}❌ [ERROR] File not found:${c.reset} ${file}`);
         process.exit(1);
     }
 
@@ -60,12 +76,12 @@ function applyPatch() {
     const occurrences = content.split(search).length - 1;
     
     if (occurrences === 0) {
-        console.error(`[ERROR] Search string not found in file. The file may have drifted or been edited. \nSearch string: "${search}"`);
+        console.error(`${c.red}❌ [ERROR] Search string not found in file.${c.reset} The file may have drifted or been edited.\n${c.yellow}Search string:${c.reset} "${search}"`);
         process.exit(1);
     }
     
     if (occurrences > 1) {
-        console.error(`[ERROR] Ambiguous replacement. Search string found ${occurrences} times. Provide a more specific search string containing surrounding context.`);
+        console.error(`${c.red}❌ [ERROR] Ambiguous replacement.${c.reset} Search string found ${occurrences} times. Provide a more specific search string containing surrounding context.`);
         process.exit(1);
     }
 
@@ -74,9 +90,9 @@ function applyPatch() {
     const newContent = content.replace(search, replace);
     writeFileSync(file, newContent, 'utf-8');
     
-    console.log(`[SUCCESS] Patch applied to ${file}`);
-    console.log(`[INFO] Backup saved to ${backupPath}`);
-    console.log(`[INFO] To rollback, run: cp "${backupPath}" "${file}"`);
+    console.log(`${c.green}✅ [SUCCESS] Patch applied to${c.reset} ${file}`);
+    console.log(`${c.cyan}ℹ️  [INFO] Backup saved to${c.reset} ${backupPath}`);
+    console.log(`${c.yellow}ℹ️  [INFO] To rollback, run:${c.reset} cp "${backupPath}" "${file}"`);
 }
 
 applyPatch();

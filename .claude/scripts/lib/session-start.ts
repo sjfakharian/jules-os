@@ -309,7 +309,18 @@ export function isSkippedPath(
 	pathRel: string,
 	skipPrefixes: readonly string[],
 ): boolean {
-	if (pathRel.split("/").some((seg) => ANY_DEPTH_SEGMENTS.has(seg))) return true;
+	// ⚡ Bolt: Performance optimization
+	// Replaced pathRel.split("/").some(...) with an iterative index search.
+	// This avoids allocating an array of path segments on every file scanned
+	// during a full vault directory walk, reducing CPU and GC overhead.
+	let start = 0;
+	while (start < pathRel.length) {
+		let end = pathRel.indexOf("/", start);
+		if (end === -1) end = pathRel.length;
+		if (ANY_DEPTH_SEGMENTS.has(pathRel.slice(start, end))) return true;
+		start = end + 1;
+	}
+
 	return [...skipPrefixes, ...PORTFOLIO_SKIP_PREFIXES].some(
 		(p) => pathRel === p || pathRel.startsWith(p + "/"),
 	);
