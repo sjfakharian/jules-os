@@ -318,23 +318,23 @@ async function main(): Promise<void> {
 		);
 	}
 
-	const mode = apply ? "APPLIED" : "DRY-RUN (pass --apply to act)";
-	console.log(`tidy-fix — ${mode}`);
+	const mode = apply ? "\x1b[1;32mAPPLIED\x1b[0m" : "\x1b[1;33mDRY-RUN\x1b[0m (pass --apply to act)";
+	console.log(`\x1b[1;35m🧹 tidy-fix\x1b[0m — ${mode}`);
 	if (report.fixed.length === 0 && report.refused.length === 0) {
-		console.log("nothing to do — vault is clean.");
+		console.log("\x1b[32m✨ nothing to do — vault is clean.\x1b[0m");
 		return;
 	}
 	if (report.fixed.length > 0) {
-		console.log(apply ? "\nFixed:" : "\nWould fix:");
-		for (const f of report.fixed) console.log(`  ${f}`);
+		console.log(apply ? "\n\x1b[1;32m✅ Fixed:\x1b[0m" : "\n\x1b[1;36m🛠️  Would fix:\x1b[0m");
+		for (const f of report.fixed) console.log(`  \x1b[36m${f}\x1b[0m`);
 	}
 	if (report.refused.length > 0) {
-		console.log("\nRefused (judgment — run /om-tidy):");
-		for (const r of report.refused) console.log(`  ${r}`);
+		console.log("\n\x1b[1;33m⚠️  Refused\x1b[0m (judgment — run /om-tidy):");
+		for (const r of report.refused) console.log(`  \x1b[33m${r}\x1b[0m`);
 	}
 	if (report.notes.length > 0) {
-		console.log("\nNotes:");
-		for (const n of report.notes) console.log(`${n}`);
+		console.log("\n\x1b[1;34mℹ️  Notes:\x1b[0m");
+		for (const n of report.notes) console.log(`\x1b[90m  ${n}\x1b[0m`);
 	}
 }
 
