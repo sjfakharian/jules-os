@@ -199,7 +199,14 @@ export function parseOpenLoopConfig(manifestJson: string | null): OpenLoopConfig
 export function countOpenLoops(content: string, sectionRe: RegExp): number {
 	let inActionSection = false;
 	let count = 0;
-	for (const line of content.split("\n")) {
+	// ⚡ Bolt: Performance optimization
+	// Avoid string.split('\n') which creates a huge array and causes O(N) memory allocation.
+	// We iterate manually and slice.
+	for (let start = 0, end = 0; start <= content.length; start = end + 1) {
+		end = content.indexOf("\n", start);
+		if (end === -1) end = content.length;
+		const line = content.slice(start, end);
+
 		if (/^##+\s/.test(line)) {
 			inActionSection = sectionRe.test(line);
 			continue;
