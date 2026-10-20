@@ -280,10 +280,18 @@ export function formatActiveWork(
  * "(no git history)" when empty (matching the legacy shell message).
  */
 export function formatRecentChanges(gitOutput: string, limit: number): string {
-	const lines = gitOutput
-		.split("\n")
-		.filter((l) => l.length > 0)
-		.slice(0, limit);
+	// Avoid string.split('\n') which creates a huge intermediate array for large command outputs.
+	const lines: string[] = [];
+	let start = 0;
+	while (start <= gitOutput.length && lines.length < limit) {
+		const nextNewline = gitOutput.indexOf("\n", start);
+		const end = nextNewline !== -1 ? nextNewline : gitOutput.length;
+		if (end > start) {
+			lines.push(gitOutput.slice(start, end));
+		}
+		if (nextNewline === -1) break;
+		start = nextNewline + 1;
+	}
 	return lines.length > 0 ? lines.join("\n") : "(no git history)";
 }
 

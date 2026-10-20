@@ -21,3 +21,6 @@
 ## 2024-11-20 - O(N) Array Allocation in countSection
 **Learning:** `content.split("\n")` in `countSection` (and similarly in `countOpenLoops`) creates a huge intermediate array for large markdown files, even when the section being parsed is near the beginning. This O(N) allocation causes unnecessary garbage collection and memory overhead.
 **Action:** Use an iterative approach with `indexOf('\n')` and `slice` instead of `split` to process lines. This prevents massive array allocations and improves processing time significantly for large documents.
+## 2024-11-21 - O(N) Array Allocation in formatRecentChanges
+**Learning:** `gitOutput.split("\n")` in `formatRecentChanges` (inside `.claude/scripts/lib/session-start.ts`) creates a potentially huge intermediate array in memory when git logs are large, even though we only need a few lines. This O(N) allocation causes unnecessary garbage collection and memory overhead.
+**Action:** Used an iterative approach with `indexOf('\n')` and `slice` instead of `split` to process strings where we only need the first few matching parts. This prevents massive array allocations and improves processing time significantly for large command outputs.
