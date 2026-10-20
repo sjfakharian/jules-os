@@ -103,19 +103,19 @@ describe("formatResult", () => {
 	test("within limit — prints ✓", () => {
 		assert.deepEqual(formatResult(847, 1000), {
 			ok: true,
-			output: "847/1000 ✓",
+			output: "847/1000 \x1b[32m✓\x1b[0m",
 		});
 	});
 	test("exactly at limit — ✓", () => {
 		assert.deepEqual(formatResult(1000, 1000), {
 			ok: true,
-			output: "1000/1000 ✓",
+			output: "1000/1000 \x1b[32m✓\x1b[0m",
 		});
 	});
 	test("over limit — ✗ with overage", () => {
 		assert.deepEqual(formatResult(847, 500), {
 			ok: false,
-			output: "847/500 ✗ (over by 347)",
+			output: "847/500 \x1b[31m✗\x1b[0m (over by 347)",
 		});
 	});
 });

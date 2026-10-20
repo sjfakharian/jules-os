@@ -16,16 +16,23 @@ import { countSection, formatResult } from "./lib/charcount.ts";
 
 const [, , file, section, subArg, limitArg] = process.argv;
 
+const c = {
+	reset: "\x1b[0m",
+	red: "\x1b[31m",
+	cyan: "\x1b[36m",
+	yellow: "\x1b[33m",
+};
+
 if (!file || !section) {
 	process.stderr.write(
-		'Usage: charcount.ts <file> "Section Header" [subsection] [limit]\n',
+		`${c.cyan}💡 Usage:${c.reset} charcount.ts <file> "Section Header" [subsection] [limit]\n`,
 	);
-	process.stderr.write('  subsection: use "" to skip when passing a limit\n');
+	process.stderr.write(`  subsection: use "" to skip when passing a limit\n`);
 	process.exit(1);
 }
 
 if (!existsSync(file)) {
-	process.stderr.write(`File not found: ${file}\n`);
+	process.stderr.write(`${c.red}❌ [ERROR] File not found:${c.reset} ${file}\n`);
 	process.exit(1);
 }
 
@@ -33,7 +40,7 @@ const sub = subArg ? subArg : undefined;
 const limit = limitArg ? Number(limitArg) : undefined;
 
 if (limit !== undefined && (!Number.isFinite(limit) || limit < 0)) {
-	process.stderr.write(`Invalid limit: ${limitArg}\n`);
+	process.stderr.write(`${c.red}❌ [ERROR] Invalid limit:${c.reset} ${limitArg}\n`);
 	process.exit(1);
 }
 
