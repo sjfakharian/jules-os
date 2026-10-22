@@ -80,13 +80,13 @@ after(() => {
 const runHook = () => spawnHook(SCRIPT, "", { CLAUDE_PROJECT_DIR: TMP_DIR });
 
 const REQUIRED_SECTIONS = [
-	"### Date",
-	"### North Star (current goals)",
-	"### Brain Topics (read on demand)",
-	"### Recent Changes (last 48h)",
-	"### Open Tasks",
-	"### Active Work",
-	"### Vault File Listing",
+	"### 📅 Date",
+	"### 🌟 North Star (current goals)",
+	"### 📚 Brain Topics (read on demand)",
+	"### 🕒 Recent Changes (last 48h)",
+	"### ☑️ Open Tasks",
+	"### 🚀 Active Work",
+	"### 📂 Vault File Listing",
 ];
 
 describe("session-start — silence contract and structure", () => {
@@ -117,8 +117,8 @@ describe("session-start — silence contract and structure", () => {
 	test("openTasks reports '(no open tasks)' for a vault with no user content", () => {
 		// work/active/ is empty and vault root contains no non-infra .md files.
 		const { stdout } = runHook();
-		const open = stdout.split("### Open Tasks\n")[1]?.split("\n### ")[0];
-		assert.ok(open !== undefined, "Open Tasks section should be present");
+		const open = stdout.split("### ☑️ Open Tasks\n")[1]?.split("\n### ")[0];
+		assert.ok(stdout.includes("### ☑️ Open Tasks"), "Open Tasks section should be present");
 		assert.match(open ?? "", /\(no open tasks\)/);
 	});
 
@@ -128,9 +128,9 @@ describe("session-start — silence contract and structure", () => {
 		// proves the predicate is what each call site actually uses.
 		const { stdout } = runHook();
 		const brain =
-			stdout.split("### Brain Topics (read on demand)\n")[1]?.split("\n### ")[0] ?? "";
+			stdout.split("### 📚 Brain Topics (read on demand)\n")[1]?.split("\n### ")[0] ?? "";
 		const listing =
-			stdout.split("### Vault File Listing\n")[1] ?? "";
+			stdout.split("### 📂 Vault File Listing\n")[1] ?? "";
 		// Brain index strips the extension (case-insensitive) — bare topic name.
 		assert.match(
 			brain,
@@ -157,7 +157,7 @@ describe("session-start — openTasks aggregation", () => {
 			const { stdout, stderr, code } = runHook();
 			assert.equal(code, 0);
 			assert.equal(stderr, "");
-			const open = stdout.split("### Open Tasks\n")[1]?.split("\n### ")[0] ?? "";
+			const open = stdout.split("### ☑️ Open Tasks\n")[1]?.split("\n### ")[0] ?? "";
 			// Forward-slash source path (cross-platform display); only the
 			// unchecked task surfaces; the checked one is filtered.
 			assert.match(open, /work\/active\/project-x\.md/);
@@ -217,7 +217,7 @@ describe("session-start — listing collapse and injection budget", () => {
 
 	const runBig = () => spawnHook(SCRIPT, "", { CLAUDE_PROJECT_DIR: BIG_DIR });
 	const listingOf = (stdout: string) =>
-		stdout.split("### Vault File Listing\n")[1]?.split("\n### ")[0] ?? "";
+		stdout.split("### 📂 Vault File Listing\n")[1]?.split("\n### ")[0] ?? "";
 
 	test("a directory over the threshold collapses; one under it stays expanded", () => {
 		const { stdout, code, stderr } = runBig();
@@ -266,12 +266,12 @@ describe("session-start — listing collapse and injection budget", () => {
 				`meter must report the ceiling and name what it dropped, got: ${last}`,
 			);
 			// The listing is the first thing surrendered.
-			assert.match(last, /collapsed: Vault File Listing/);
+			assert.match(last, /collapsed: 📂 Vault File Listing/);
 			assert.match(listingOf(stdout), /Over budget/, "dropped body is a pointer, not silence");
 			// Degrading is never truncation: the header survives so the session
 			// knows the section exists and can go get it.
-			assert.ok(stdout.includes("### Vault File Listing"));
-			assert.ok(stdout.includes("### Date"), "load-bearing sections are untouched");
+			assert.ok(stdout.includes("### 📂 Vault File Listing"));
+			assert.ok(stdout.includes("### 📅 Date"), "load-bearing sections are untouched");
 		} finally {
 			rmSync(manifest, { force: true });
 		}

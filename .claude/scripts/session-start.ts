@@ -536,9 +536,9 @@ const PRIORITY = {
 } as const;
 
 const sections: BudgetSection[] = [
-	{ header: "", body: "## Session Context", priority: PRIORITY.LOAD_BEARING },
+	{ header: "", body: "## 🧠 Session Context", priority: PRIORITY.LOAD_BEARING },
 	{
-		header: "### Date",
+		header: "### 📅 Date",
 		body: formatDateHeader(new Date()),
 		priority: PRIORITY.LOAD_BEARING,
 	},
@@ -546,13 +546,13 @@ const sections: BudgetSection[] = [
 if (mode === "full") {
 	sections.push(
 		{
-			header: "### North Star (current goals)",
+			header: "### 🌟 North Star (current goals)",
 			body: northStar(),
 			priority: PRIORITY.NORTH_STAR,
 			fallback: "(Over budget — re-read brain/North Star.md on demand.)",
 		},
 		{
-			header: "### Brain Topics (read on demand)",
+			header: "### 📚 Brain Topics (read on demand)",
 			body: brainIndex(),
 			priority: PRIORITY.BRAIN_INDEX,
 			fallback: "(Over budget — list brain/ on demand.)",
@@ -561,24 +561,24 @@ if (mode === "full") {
 }
 sections.push(
 	{
-		header: "### Recent Changes (last 48h)",
+		header: "### 🕒 Recent Changes (last 48h)",
 		body: recentChanges(),
 		priority: PRIORITY.RECENT_CHANGES,
 		fallback: "(Over budget — run git log on demand.)",
 	},
-	{ header: "### Open Tasks", body: openTasks(), priority: PRIORITY.VOLATILE },
-	{ header: "### Active Work", body: activeWork(), priority: PRIORITY.VOLATILE },
+	{ header: "### ☑️ Open Tasks", body: openTasks(), priority: PRIORITY.VOLATILE },
+	{ header: "### 🚀 Active Work", body: activeWork(), priority: PRIORITY.VOLATILE },
 );
 if (mode === "full") {
 	sections.push({
-		header: "### Vault File Listing",
+		header: "### 📂 Vault File Listing",
 		body: listMd().join("\n"),
 		priority: PRIORITY.FILE_LISTING,
 		fallback: "(Over budget — Glob or QMD the vault on demand.)",
 	});
 } else {
 	sections.push({
-		header: "### Context Pointer",
+		header: "### 📌 Context Pointer",
 		body: "(Re-entry via resume/compact — North Star, brain index, and the file listing were injected at session start and are unchanged; re-read on demand.)",
 		priority: PRIORITY.LOAD_BEARING,
 	});
@@ -586,14 +586,14 @@ if (mode === "full") {
 
 if (qmdSelfHealNote !== null) {
 	sections.push({
-		header: "### QMD Self-Heal",
+		header: "### 🔧 QMD Self-Heal",
 		body: qmdSelfHealNote,
 		priority: PRIORITY.LOAD_BEARING,
 	});
 }
 if (qmdVersionNote !== null) {
 	sections.push({
-		header: "### QMD Version",
+		header: "### ℹ️ QMD Version",
 		body: qmdVersionNote,
 		priority: PRIORITY.LOAD_BEARING,
 	});
@@ -612,7 +612,7 @@ const hygieneLines = formatActiveHygiene(
 );
 if (hygieneLines.length > 0) {
 	sections.push({
-		header: "### Vault Hygiene (drift detected)",
+		header: "### 🧹 Vault Hygiene (drift detected)",
 		body: hygieneLines.join("\n"),
 		priority: PRIORITY.HYGIENE,
 	});

@@ -5,3 +5,6 @@
 ## 2024-10-18 - Native ANSI Escape Codes for CLI UX
 **Learning:** For a minimal-dependency Node.js environment like `.claude/scripts/`, using third-party libraries like `chalk` for terminal output styling is unnecessary and adds overhead. Native ANSI escape codes (e.g., `\x1b[36m` for cyan, `\x1b[0m` for reset) work perfectly well for coloring CLI output.
 **Action:** Always prefer native ANSI escape codes when adding colors and styling to terminal outputs in this project's CLI scripts to maintain the zero-dependency runtime while improving the Developer Experience (DX).
+## 2026-10-22 - Emojis as CLI/System Message UX
+**Learning:** In a CLI agent setting, markdown structures (headers) and system messages are the core UI. Enhancing these with visual markers like emojis drastically improves scannability and structure comprehension without heavy formatting.
+**Action:** Use emojis as visual anchors in dynamically generated system prompts and logs to improve the Developer Experience (DX).
