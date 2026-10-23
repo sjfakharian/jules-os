@@ -199,7 +199,18 @@ export function parseOpenLoopConfig(manifestJson: string | null): OpenLoopConfig
 export function countOpenLoops(content: string, sectionRe: RegExp): number {
 	let inActionSection = false;
 	let count = 0;
-	for (const line of content.split("\n")) {
+	let start = 0;
+
+	// PERF: Iterate with indexOf + slice instead of split("\n")
+	// This avoids creating O(N) intermediate string arrays in memory
+	// and scales significantly better on large markdown monolith notes
+	// without creating GC pressure for the session scanner.
+	while (start <= content.length) {
+		let end = content.indexOf("\n", start);
+		if (end === -1) end = content.length;
+		const line = content.slice(start, end);
+		start = end + 1;
+
 		if (/^##+\s/.test(line)) {
 			inActionSection = sectionRe.test(line);
 			continue;
