@@ -24,7 +24,7 @@ export function debug(msg: string): void {
  * shape, etc.) so warning formatting stays consistent across scripts.
  */
 export function warn(msg: string): void {
-	process.stderr.write(`  ⚠ ${msg}\n`);
+	process.stderr.write(`\x1b[33m  ⚠ ${msg}\x1b[0m\n`);
 }
 
 export async function readStdinJson<T = unknown>(): Promise<T | null> {
