@@ -14,7 +14,7 @@ import { writeSync } from "node:fs";
 
 export function debug(msg: string): void {
 	if (process.env["HOOK_DEBUG"] === "1") {
-		process.stderr.write(`[hook-debug ${new Date().toISOString()}] ${msg}\n`);
+		process.stderr.write(`\x1b[90m[hook-debug ${new Date().toISOString()}] ${msg}\x1b[0m\n`);
 	}
 }
 
@@ -24,7 +24,7 @@ export function debug(msg: string): void {
  * shape, etc.) so warning formatting stays consistent across scripts.
  */
 export function warn(msg: string): void {
-	process.stderr.write(`  ⚠ ${msg}\n`);
+	process.stderr.write(`\x1b[33m  ⚠ ${msg}\x1b[0m\n`);
 }
 
 export async function readStdinJson<T = unknown>(): Promise<T | null> {

@@ -35,13 +35,13 @@ describe("warn", () => {
 	test("prefixes the message with `  ⚠ ` and appends a newline", () => {
 		capture = captureStderr();
 		warn("something went wrong");
-		assert.deepEqual(capture.lines, ["  ⚠ something went wrong\n"]);
+		assert.deepEqual(capture.lines, ["\x1b[33m  ⚠ something went wrong\x1b[0m\n"]);
 	});
 
 	test("writes nothing else when called with empty string", () => {
 		capture = captureStderr();
 		warn("");
-		assert.deepEqual(capture.lines, ["  ⚠ \n"]);
+		assert.deepEqual(capture.lines, ["\x1b[33m  ⚠ \x1b[0m\n"]);
 	});
 });
 
@@ -79,7 +79,7 @@ describe("debug", () => {
 		assert.equal(capture.lines.length, 1);
 		assert.match(
 			capture.lines[0] ?? "",
-			/^\[hook-debug \d{4}-\d{2}-\d{2}T[^\]]+\] taking path A\n$/,
+			/^\x1b\[90m\[hook-debug \d{4}-\d{2}-\d{2}T[^\]]+\] taking path A\x1b\[0m\n$/,
 		);
 	});
 });
