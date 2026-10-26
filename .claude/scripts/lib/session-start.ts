@@ -751,11 +751,19 @@ export function collectOpenTasks(
 	let collected = 0;
 	for (const { path, content } of sources) {
 		if (collected >= limit) break;
-		const lines = content
-			.split(/\r?\n/)
-			.filter((line) => /^\s*- \[ \]/.test(line));
-		if (lines.length === 0) continue;
-		const taken = lines.slice(0, limit - collected);
+		const taken: string[] = [];
+		let start = 0;
+		while (start <= content.length && collected + taken.length < limit) {
+			let end = content.indexOf("\n", start);
+			if (end === -1) end = content.length;
+			const line = content.slice(start, end).replace(/\r$/, "");
+			if (/^\s*- \[ \]/.test(line)) {
+				taken.push(line);
+			}
+			start = end + 1;
+		}
+
+		if (taken.length === 0) continue;
 		// Collapse any CR/LF run (POSIX-only filename oddity) to a literal
 		// `\n` escape — bare \r alone would otherwise slip past a /\r?\n/
 		// regex but still corrupt the line-based output on consumers that
