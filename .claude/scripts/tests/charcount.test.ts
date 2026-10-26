@@ -98,24 +98,24 @@ describe("countSection — with sub-marker", () => {
 
 describe("formatResult", () => {
 	test("no limit — prints bare count", () => {
-		assert.deepEqual(formatResult(847), { ok: true, output: "847" });
+		assert.deepEqual(formatResult(847), { ok: true, output: "\x1b[36m847\x1b[0m" });
 	});
 	test("within limit — prints ✓", () => {
 		assert.deepEqual(formatResult(847, 1000), {
 			ok: true,
-			output: "847/1000 ✓",
+			output: "\x1b[32m847/1000 ✓\x1b[0m",
 		});
 	});
 	test("exactly at limit — ✓", () => {
 		assert.deepEqual(formatResult(1000, 1000), {
 			ok: true,
-			output: "1000/1000 ✓",
+			output: "\x1b[32m1000/1000 ✓\x1b[0m",
 		});
 	});
 	test("over limit — ✗ with overage", () => {
 		assert.deepEqual(formatResult(847, 500), {
 			ok: false,
-			output: "847/500 ✗ (over by 347)",
+			output: "\x1b[31m847/500 ✗ (over by 347)\x1b[0m",
 		});
 	});
 });
