@@ -21,3 +21,7 @@
 ## 2024-11-20 - O(N) Array Allocation in countSection
 **Learning:** `content.split("\n")` in `countSection` (and similarly in `countOpenLoops`) creates a huge intermediate array for large markdown files, even when the section being parsed is near the beginning. This O(N) allocation causes unnecessary garbage collection and memory overhead.
 **Action:** Use an iterative approach with `indexOf('\n')` and `slice` instead of `split` to process lines. This prevents massive array allocations and improves processing time significantly for large documents.
+
+## 2024-11-20 - O(N) Array Allocation in countOpenLoops
+**Learning:** Found that `countOpenLoops` dynamically used `content.split("\n")` inside `lib/active-hygiene.ts` when counting unchecked boxes inside active notes. When crawling a large vault of markdown files, `split()` constructs thousands of transient arrays on the heap, triggering massive GC and CPU overhead for large notes.
+**Action:** Use an iterative `indexOf` loop with `slice` bounded by `start` and `end` indices when parsing lines for O(1) allocation overhead instead of `split("\n")` to avoid garbage generating patterns entirely.
