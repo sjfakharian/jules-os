@@ -18,14 +18,14 @@ const [, , file, section, subArg, limitArg] = process.argv;
 
 if (!file || !section) {
 	process.stderr.write(
-		'Usage: charcount.ts <file> "Section Header" [subsection] [limit]\n',
+		'\x1b[33mUsage: charcount.ts <file> "Section Header" [subsection] [limit]\x1b[0m\n',
 	);
-	process.stderr.write('  subsection: use "" to skip when passing a limit\n');
+	process.stderr.write('\x1b[90m  subsection: use "" to skip when passing a limit\x1b[0m\n');
 	process.exit(1);
 }
 
 if (!existsSync(file)) {
-	process.stderr.write(`File not found: ${file}\n`);
+	process.stderr.write(`\x1b[31mFile not found: ${file}\x1b[0m\n`);
 	process.exit(1);
 }
 
@@ -33,7 +33,7 @@ const sub = subArg ? subArg : undefined;
 const limit = limitArg ? Number(limitArg) : undefined;
 
 if (limit !== undefined && (!Number.isFinite(limit) || limit < 0)) {
-	process.stderr.write(`Invalid limit: ${limitArg}\n`);
+	process.stderr.write(`\x1b[31mInvalid limit: ${limitArg}\x1b[0m\n`);
 	process.exit(1);
 }
 

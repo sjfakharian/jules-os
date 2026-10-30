@@ -67,8 +67,8 @@ export function formatResult(count: number, limit?: number): FormatResult {
 		return { ok: true, output: String(count) };
 	}
 	if (count <= limit) {
-		return { ok: true, output: `${count}/${limit} ✓` };
+		return { ok: true, output: `\x1b[32m${count}/${limit} ✓\x1b[0m` };
 	}
 	const over = count - limit;
-	return { ok: false, output: `${count}/${limit} ✗ (over by ${over})` };
+	return { ok: false, output: `\x1b[31m${count}/${limit} ✗ (over by ${over})\x1b[0m` };
 }
