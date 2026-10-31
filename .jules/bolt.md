@@ -21,3 +21,7 @@
 ## 2024-11-20 - O(N) Array Allocation in countSection
 **Learning:** `content.split("\n")` in `countSection` (and similarly in `countOpenLoops`) creates a huge intermediate array for large markdown files, even when the section being parsed is near the beginning. This O(N) allocation causes unnecessary garbage collection and memory overhead.
 **Action:** Use an iterative approach with `indexOf('\n')` and `slice` instead of `split` to process lines. This prevents massive array allocations and improves processing time significantly for large documents.
+
+## 2024-11-20 - O(N) Array Allocation in countOpenLoops
+**Learning:** `content.split("\n")` in `countOpenLoops` creates a massive intermediate array in memory when processing large markdown files. This O(N) allocation causes severe garbage collection and CPU overhead when determining follow-up signals in large or numerous files.
+**Action:** Replace `split("\n")` with an iterative loop using `indexOf('\n')` and `slice` to process the file line by line without allocating intermediate arrays for the whole string.
