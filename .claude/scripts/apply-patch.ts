@@ -14,6 +14,29 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, basename } from 'node:path';
 
+function getColors(isTTY: boolean) {
+    if (isTTY) {
+        return {
+            reset: '\x1b[0m',
+            red: '\x1b[31m',
+            green: '\x1b[32m',
+            yellow: '\x1b[33m',
+            cyan: '\x1b[36m',
+            magenta: '\x1b[1;35m',
+            gray: '\x1b[90m'
+        };
+    }
+    return {
+        reset: '',
+        red: '',
+        green: '',
+        yellow: '',
+        cyan: '',
+        magenta: '',
+        gray: ''
+    };
+}
+
 function parseArgs() {
     const args = process.argv.slice(2);
     const params = { file: '', search: '', replace: '' };
@@ -24,13 +47,7 @@ function parseArgs() {
         if (args[i] === '--replace' && args[i+1]) params.replace = args[++i];
     }
     
-    const c = {
-        reset: '\x1b[0m',
-        red: '\x1b[31m',
-        green: '\x1b[32m',
-        yellow: '\x1b[33m',
-        cyan: '\x1b[36m'
-    };
+    const c = getColors(!!process.stderr.isTTY);
 
     if (!params.file || !params.search || params.replace === undefined) {
         console.error(`${c.cyan}💡 Usage:${c.reset} node apply-patch.ts --file <path> --search <string> --replace <string>`);
@@ -57,16 +74,11 @@ function backupFile(filePath: string): string {
 function applyPatch() {
     const { file, search, replace } = parseArgs();
     
-    const c = {
-        reset: '\x1b[0m',
-        red: '\x1b[31m',
-        green: '\x1b[32m',
-        yellow: '\x1b[33m',
-        cyan: '\x1b[36m'
-    };
+    const errC = getColors(!!process.stderr.isTTY);
+    const outC = getColors(!!process.stdout.isTTY);
 
     if (!existsSync(file)) {
-        console.error(`${c.red}❌ [ERROR] File not found:${c.reset} ${file}`);
+        console.error(`${errC.red}❌ [ERROR] File not found:${errC.reset} ${file}`);
         process.exit(1);
     }
 
@@ -76,12 +88,12 @@ function applyPatch() {
     const occurrences = content.split(search).length - 1;
     
     if (occurrences === 0) {
-        console.error(`${c.red}❌ [ERROR] Search string not found in file.${c.reset} The file may have drifted or been edited.\n${c.yellow}Search string:${c.reset} "${search}"`);
+        console.error(`${errC.red}❌ [ERROR] Search string not found in file.${errC.reset} The file may have drifted or been edited.\n${errC.yellow}Search string:${errC.reset} "${search}"`);
         process.exit(1);
     }
     
     if (occurrences > 1) {
-        console.error(`${c.red}❌ [ERROR] Ambiguous replacement.${c.reset} Search string found ${occurrences} times. Provide a more specific search string containing surrounding context.`);
+        console.error(`${errC.red}❌ [ERROR] Ambiguous replacement.${errC.reset} Search string found ${occurrences} times. Provide a more specific search string containing surrounding context.`);
         process.exit(1);
     }
 
@@ -90,9 +102,9 @@ function applyPatch() {
     const newContent = content.replace(search, replace);
     writeFileSync(file, newContent, 'utf-8');
     
-    console.log(`${c.green}✅ [SUCCESS] Patch applied to${c.reset} ${file}`);
-    console.log(`${c.cyan}ℹ️  [INFO] Backup saved to${c.reset} ${backupPath}`);
-    console.log(`${c.yellow}ℹ️  [INFO] To rollback, run:${c.reset} cp "${backupPath}" "${file}"`);
+    console.log(`${outC.green}✅ [SUCCESS] Patch applied to${outC.reset} ${file}`);
+    console.log(`${outC.cyan}ℹ️  [INFO] Backup saved to${outC.reset} ${backupPath}`);
+    console.log(`${outC.yellow}ℹ️  [INFO] To rollback, run:${outC.reset} cp "${backupPath}" "${file}"`);
 }
 
 applyPatch();
