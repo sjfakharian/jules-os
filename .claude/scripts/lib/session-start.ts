@@ -280,10 +280,18 @@ export function formatActiveWork(
  * "(no git history)" when empty (matching the legacy shell message).
  */
 export function formatRecentChanges(gitOutput: string, limit: number): string {
-	const lines = gitOutput
-		.split("\n")
-		.filter((l) => l.length > 0)
-		.slice(0, limit);
+	// ⚡ Bolt: Performance optimization
+	// Avoid string.split('\n') to prevent massive array allocation for large strings.
+	const lines: string[] = [];
+	let start = 0;
+	while (start <= gitOutput.length && lines.length < limit) {
+		let end = gitOutput.indexOf('\n', start);
+		if (end === -1) end = gitOutput.length;
+		if (end > start) {
+			lines.push(gitOutput.slice(start, end));
+		}
+		start = end + 1;
+	}
 	return lines.length > 0 ? lines.join("\n") : "(no git history)";
 }
 
@@ -751,11 +759,19 @@ export function collectOpenTasks(
 	let collected = 0;
 	for (const { path, content } of sources) {
 		if (collected >= limit) break;
-		const lines = content
-			.split(/\r?\n/)
-			.filter((line) => /^\s*- \[ \]/.test(line));
-		if (lines.length === 0) continue;
-		const taken = lines.slice(0, limit - collected);
+		const taken: string[] = [];
+		let start = 0;
+		while (start <= content.length && collected + taken.length < limit) {
+			let end = content.indexOf("\n", start);
+			if (end === -1) end = content.length;
+			const line = content.slice(start, end).replace(/\r$/, "");
+			if (/^\s*- \[ \]/.test(line)) {
+				taken.push(line);
+			}
+			start = end + 1;
+		}
+
+		if (taken.length === 0) continue;
 		// Collapse any CR/LF run (POSIX-only filename oddity) to a literal
 		// `\n` escape — bare \r alone would otherwise slip past a /\r?\n/
 		// regex but still corrupt the line-based output on consumers that
