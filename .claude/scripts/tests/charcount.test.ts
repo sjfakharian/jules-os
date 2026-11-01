@@ -99,23 +99,36 @@ describe("countSection — with sub-marker", () => {
 describe("formatResult", () => {
 	test("no limit — prints bare count", () => {
 		assert.deepEqual(formatResult(847), { ok: true, output: "847" });
+		assert.deepEqual(formatResult(847, undefined, true), { ok: true, output: "\x1b[36m📊 847 chars\x1b[0m" });
 	});
-	test("within limit — prints ✓", () => {
+	test("within limit — prints ✓ / ✅", () => {
 		assert.deepEqual(formatResult(847, 1000), {
 			ok: true,
 			output: "847/1000 ✓",
 		});
+		assert.deepEqual(formatResult(847, 1000, true), {
+			ok: true,
+			output: "\x1b[32m✅ 847/1000 chars\x1b[0m",
+		});
 	});
-	test("exactly at limit — ✓", () => {
+	test("exactly at limit — ✓ / ✅", () => {
 		assert.deepEqual(formatResult(1000, 1000), {
 			ok: true,
 			output: "1000/1000 ✓",
 		});
+		assert.deepEqual(formatResult(1000, 1000, true), {
+			ok: true,
+			output: "\x1b[32m✅ 1000/1000 chars\x1b[0m",
+		});
 	});
-	test("over limit — ✗ with overage", () => {
+	test("over limit — ✗ / ❌ with overage", () => {
 		assert.deepEqual(formatResult(847, 500), {
 			ok: false,
 			output: "847/500 ✗ (over by 347)",
+		});
+		assert.deepEqual(formatResult(847, 500, true), {
+			ok: false,
+			output: "\x1b[31m❌ 847/500 chars (over by 347)\x1b[0m",
 		});
 	});
 });

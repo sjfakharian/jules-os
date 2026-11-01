@@ -62,13 +62,13 @@ export type FormatResult = {
 	readonly output: string;
 };
 
-export function formatResult(count: number, limit?: number): FormatResult {
+export function formatResult(count: number, limit?: number, isTTY = false): FormatResult {
 	if (limit === undefined) {
-		return { ok: true, output: String(count) };
+		return { ok: true, output: isTTY ? `\x1b[36m📊 ${count} chars\x1b[0m` : String(count) };
 	}
 	if (count <= limit) {
-		return { ok: true, output: `${count}/${limit} ✓` };
+		return { ok: true, output: isTTY ? `\x1b[32m✅ ${count}/${limit} chars\x1b[0m` : `${count}/${limit} ✓` };
 	}
 	const over = count - limit;
-	return { ok: false, output: `${count}/${limit} ✗ (over by ${over})` };
+	return { ok: false, output: isTTY ? `\x1b[31m❌ ${count}/${limit} chars (over by ${over})\x1b[0m` : `${count}/${limit} ✗ (over by ${over})` };
 }

@@ -8,4 +8,4 @@
 
 ## 2024-11-01 - Conditional ANSI Colors
 **Learning:** While native ANSI escape codes are great for CLI output readability, they can pollute the output in non-TTY environments (like logs or when consumed by AI tools/scripts) if applied unconditionally.
-**Action:** When adding ANSI colors to terminal outputs, always conditionally apply them by checking `process.stdout.isTTY` or `process.stderr.isTTY`. Use a simple helper function to return empty strings when not in a TTY environment.
+**Action:** When adding ANSI colors to terminal outputs, always conditionally apply them by checking `process.stdout.isTTY` or `process.stderr.isTTY`. Use a simple helper function or parameter to return empty strings when not in a TTY environment.
