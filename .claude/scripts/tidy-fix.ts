@@ -65,6 +65,39 @@ import {
 import { generateMemoryIndex } from "./lib/automemory-index.ts";
 import { collectBrainNotes } from "./generate-memory-index.ts";
 
+function getColors(isTTY: boolean) {
+	if (isTTY) {
+		return {
+			reset: '\x1b[0m',
+			red: '\x1b[31m',
+			green: '\x1b[32m',
+			yellow: '\x1b[33m',
+			cyan: '\x1b[36m',
+			magenta: '\x1b[1;35m',
+			gray: '\x1b[90m',
+			boldGreen: '\x1b[1;32m',
+			boldYellow: '\x1b[1;33m',
+			boldCyan: '\x1b[1;36m',
+			boldBlue: '\x1b[1;34m',
+			boldMagenta: '\x1b[1;35m',
+		};
+	}
+	return {
+		reset: '',
+		red: '',
+		green: '',
+		yellow: '',
+		cyan: '',
+		magenta: '',
+		gray: '',
+		boldGreen: '',
+		boldYellow: '',
+		boldCyan: '',
+		boldBlue: '',
+		boldMagenta: '',
+	};
+}
+
 const ACTIVE_REL = "work/active";
 
 type Report = {
@@ -318,23 +351,25 @@ async function main(): Promise<void> {
 		);
 	}
 
-	const mode = apply ? "\x1b[1;32mAPPLIED\x1b[0m" : "\x1b[1;33mDRY-RUN\x1b[0m (pass --apply to act)";
-	console.log(`\x1b[1;35m🧹 tidy-fix\x1b[0m — ${mode}`);
+	const outC = getColors(!!process.stdout.isTTY);
+
+	const mode = apply ? `${outC.boldGreen}APPLIED${outC.reset}` : `${outC.boldYellow}DRY-RUN${outC.reset} (pass --apply to act)`;
+	console.log(`${outC.boldMagenta}🧹 tidy-fix${outC.reset} — ${mode}`);
 	if (report.fixed.length === 0 && report.refused.length === 0) {
-		console.log("\x1b[32m✨ nothing to do — vault is clean.\x1b[0m");
+		console.log(`${outC.green}✨ nothing to do — vault is clean.${outC.reset}`);
 		return;
 	}
 	if (report.fixed.length > 0) {
-		console.log(apply ? "\n\x1b[1;32m✅ Fixed:\x1b[0m" : "\n\x1b[1;36m🛠️  Would fix:\x1b[0m");
-		for (const f of report.fixed) console.log(`  \x1b[36m${f}\x1b[0m`);
+		console.log(apply ? `\n${outC.boldGreen}✅ Fixed:${outC.reset}` : `\n${outC.boldCyan}🛠️  Would fix:${outC.reset}`);
+		for (const f of report.fixed) console.log(`  ${outC.cyan}${f}${outC.reset}`);
 	}
 	if (report.refused.length > 0) {
-		console.log("\n\x1b[1;33m⚠️  Refused\x1b[0m (judgment — run /om-tidy):");
-		for (const r of report.refused) console.log(`  \x1b[33m${r}\x1b[0m`);
+		console.log(`\n${outC.boldYellow}⚠️  Refused${outC.reset} (judgment — run /om-tidy):`);
+		for (const r of report.refused) console.log(`  ${outC.yellow}${r}${outC.reset}`);
 	}
 	if (report.notes.length > 0) {
-		console.log("\n\x1b[1;34mℹ️  Notes:\x1b[0m");
-		for (const n of report.notes) console.log(`\x1b[90m  ${n}\x1b[0m`);
+		console.log(`\n${outC.boldBlue}ℹ️  Notes:${outC.reset}`);
+		for (const n of report.notes) console.log(`${outC.gray}  ${n}${outC.reset}`);
 	}
 }
 
