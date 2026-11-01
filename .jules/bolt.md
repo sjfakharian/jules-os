@@ -21,3 +21,7 @@
 ## 2024-11-20 - O(N) Array Allocation in countSection
 **Learning:** `content.split("\n")` in `countSection` (and similarly in `countOpenLoops`) creates a huge intermediate array for large markdown files, even when the section being parsed is near the beginning. This O(N) allocation causes unnecessary garbage collection and memory overhead.
 **Action:** Use an iterative approach with `indexOf('\n')` and `slice` instead of `split` to process lines. This prevents massive array allocations and improves processing time significantly for large documents.
+
+## 2024-11-20 - O(N) Array Allocation in formatRecentChanges
+**Learning:** `gitOutput.split("\n")` in `formatRecentChanges` creates a huge intermediate array for large git history outputs, even though we only need the first `limit` non-empty lines. This O(N) allocation causes unnecessary garbage collection and memory overhead, taking significantly longer than an iterative string slicing approach.
+**Action:** Use an iterative approach with `indexOf('\n')` and `slice` instead of `split` to process lines incrementally when reading from large outputs. This avoids massive array allocations entirely.
